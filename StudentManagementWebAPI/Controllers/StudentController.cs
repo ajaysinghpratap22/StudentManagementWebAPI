@@ -6,22 +6,33 @@ namespace StudentManagementWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
     public class StudentController : ControllerBase
     {
         public readonly ILogger<StudentController> _logger;
         public readonly StudentManagementDBContext _studentManagementDBContext;
-        public StudentController(ILogger<StudentController> logger,StudentManagementDBContext studentManagementDBContext)
+        public StudentController(ILogger<StudentController> logger, StudentManagementDBContext studentManagementDBContext)
         {
             _logger = logger;
             _studentManagementDBContext = studentManagementDBContext;
         }
         [HttpGet("GetAllStudents")]
 
-        public ActionResult<IEnumerable<Student>> GetAllStudents()
+        public ActionResult<IEnumerable<StudentDTO>> GetAllStudents()
         {
             try
             {
-                var students = _studentManagementDBContext.Students.ToList();
+                var students = _studentManagementDBContext.Students
+                    .Select(s => new StudentDTO
+                    {
+                        Id = s.Id,
+                        Name = s.Name,
+                        Email = s.Email,
+                        Age = s.Age
+                    })
+                    .ToList();
                 return Ok(students);
             }
             catch (Exception ex)
@@ -31,16 +42,30 @@ namespace StudentManagementWebAPI.Controllers
             }
         }
         [HttpGet("GetStudentById/{id}")]
-        public ActionResult<Student> GetStudentById(int id)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+        public ActionResult<StudentDTO> GetStudentById(int id)
         {
             try
             {
-                var student = _studentManagementDBContext.Students.Where(x=>x.Id==id);
+                if (id <= 0)
+                {
+                    return BadRequest("Invalid student ID.");
+                }
+                var student = _studentManagementDBContext.Students.Where(x => x.Id == id).FirstOrDefault();
                 if (student == null)
                 {
-                    return NotFound();
+                    return NotFound($"The Student with id {id} not found");
                 }
-                return Ok(student);
+                var studentDto = new StudentDTO
+                {
+                    Id = student.Id,
+                    Name = student.Name,
+                    Email = student.Email,
+                    Age = student.Age
+                };
+                return Ok(studentDto);
             }
             catch (Exception ex)
             {
@@ -49,18 +74,31 @@ namespace StudentManagementWebAPI.Controllers
             }
         }
         [HttpDelete("DeleteStudentByID/{id}")]
-        public ActionResult<Student> DeleteStudentById(int id)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<StudentDTO> DeleteStudentById(int id)
         {
             try
             {
-                var student = _studentManagementDBContext.Students.Find(id);
+                if (id <= 0)
+                {
+                    return BadRequest("Invalid student ID.");
+                }
+                var student = _studentManagementDBContext.Students.Where(x => x.Id == id).FirstOrDefault();
                 if (student == null)
                 {
-                    return NotFound();
+                    return NotFound($"The Student with id {id} not found");
                 }
+                var studentDto = new StudentDTO
+                {
+                    Id = student.Id,
+                    Name = student.Name,
+                    Email = student.Email,
+                    Age = student.Age
+                };
                 _studentManagementDBContext.Students.Remove(student);
                 _studentManagementDBContext.SaveChanges();
-                return Ok();
+                return Ok(studentDto);
             }
             catch (Exception ex)
             {
@@ -68,5 +106,65 @@ namespace StudentManagementWebAPI.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        [HttpGet("GetStudentByName/{name}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<StudentDTO> GetStudentByName(string name)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    return BadRequest("Invalid student name.");
+                }
+                var student = _studentManagementDBContext.Students.Where(x => x.Name == name).FirstOrDefault();
+                if (student == null)
+                {
+                    return NotFound($"The Student with name {name} not found");
+                }
+                var studentDto = new StudentDTO
+                {
+                    Id = student.Id,
+                    Name = student.Name,
+                    Email = student.Email,
+                    Age = student.Age
+                };
+                return Ok(studentDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while fetching the student with Name {name}.");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        [HttpPost("CreateStudent")]
+        public ActionResult<StudentDTO> CreateStudent(StudentDTO studentDTO)
+        {
+            try
+            {
+                if (studentDTO == null)
+                {
+                    return BadRequest("Student data is required");
+                }
+                var student = new Student
+                {
+                    Name = studentDTO.Name,
+                    Email = studentDTO.Email,
+                    Age = studentDTO.Age,
+                    CreatedDate = DateTime.UtcNow
+                };
+                _studentManagementDBContext.Students.Add(student);
+                _studentManagementDBContext.SaveChanges();
+                studentDTO.Id = student.Id;
+                return Ok(studentDTO);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while inserting student");
+                return StatusCode(500, "Internal server error");
+            }
+            
+        }
+        
     }
 }
