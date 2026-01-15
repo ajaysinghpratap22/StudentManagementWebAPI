@@ -24,7 +24,7 @@ namespace StudentManagementWebAPI.Controllers
         {
             try
             {
-
+                _logger.LogInformation("GetAllStudents methods started");
                 var students = _studentManagementDBContext.Students
                     .Select(s => new StudentDTO
                     {
@@ -50,13 +50,16 @@ namespace StudentManagementWebAPI.Controllers
         {
             try
             {
+                _logger.LogInformation("GetStudentById methods started");
                 if (id <= 0)
                 {
+                    _logger.LogWarning("Invalid student ID provided: {Id}", id);
                     return BadRequest("Invalid student ID.");
                 }
                 var student = _studentManagementDBContext.Students.Where(x => x.Id == id).FirstOrDefault();
                 if (student == null)
                 {
+                    _logger.LogWarning("Student with ID {Id} not found.", id);
                     return NotFound($"The Student with id {id} not found");
                 }
                 var studentDto = new StudentDTO
@@ -66,6 +69,7 @@ namespace StudentManagementWebAPI.Controllers
                     Email = student.Email,
                     Age = student.Age
                 };
+                _logger.LogInformation("Student with ID {Id} fetched successfully.", id);
                 return Ok(studentDto);
             }
             catch (Exception ex)
@@ -81,13 +85,16 @@ namespace StudentManagementWebAPI.Controllers
         {
             try
             {
+                _logger.LogInformation("DeleteStudentById methods started");
                 if (id <= 0)
                 {
+                    _logger.LogWarning("Invalid student ID provided: {Id}", id);
                     return BadRequest("Invalid student ID.");
                 }
                 var student = _studentManagementDBContext.Students.Where(x => x.Id == id).FirstOrDefault();
                 if (student == null)
                 {
+                    _logger.LogWarning("Student with ID {Id} not found.", id);
                     return NotFound($"The Student with id {id} not found");
                 }
                 var studentDto = new StudentDTO
@@ -99,6 +106,7 @@ namespace StudentManagementWebAPI.Controllers
                 };
                 _studentManagementDBContext.Students.Remove(student);
                 _studentManagementDBContext.SaveChanges();
+                _logger.LogInformation("Student with ID {Id} deleted successfully.", id);
                 return Ok(studentDto);
             }
             catch (Exception ex)
@@ -114,13 +122,16 @@ namespace StudentManagementWebAPI.Controllers
         {
             try
             {
+                _logger.LogInformation("GetStudentByName methods started");
                 if (string.IsNullOrWhiteSpace(name))
                 {
+                    _logger.LogWarning("Invalid student name provided: {Name}", name);
                     return BadRequest("Invalid student name.");
                 }
                 var student = _studentManagementDBContext.Students.Where(x => x.Name == name).FirstOrDefault();
                 if (student == null)
                 {
+                    _logger.LogWarning("Student with Name {Name} not found.", name);
                     return NotFound($"The Student with name {name} not found");
                 }
                 var studentDto = new StudentDTO
@@ -130,6 +141,7 @@ namespace StudentManagementWebAPI.Controllers
                     Email = student.Email,
                     Age = student.Age
                 };
+                _logger.LogInformation("Student with Name {Name} fetched successfully.", name);
                 return Ok(studentDto);
             }
             catch (Exception ex)
@@ -143,8 +155,10 @@ namespace StudentManagementWebAPI.Controllers
         {
             try
             {
+                _logger.LogInformation("CreateStudent methods started");
                 if (studentDTO == null)
                 {
+                    _logger.LogWarning("Student data is null");
                     return BadRequest("Student data is required");
                 }
                 var student = new Student
@@ -157,6 +171,7 @@ namespace StudentManagementWebAPI.Controllers
                 _studentManagementDBContext.Students.Add(student);
                 _studentManagementDBContext.SaveChanges();
                 studentDTO.Id = student.Id;
+                _logger.LogInformation("Student created successfully with ID {Id}", student.Id);
                 return Ok(studentDTO);
             }
             catch (Exception ex)
@@ -171,19 +186,23 @@ namespace StudentManagementWebAPI.Controllers
         {
             try
             {
+                _logger.LogInformation("UpdateStudent methods started");
                 if (studentDTO == null || studentDTO.Id <= 0)
                 {
+                    _logger.LogWarning("Invalid student data provided for update");
                     return BadRequest("Valid student data is required");
                 }
                 var existingStudent = _studentManagementDBContext.Students.Where(x => x.Id == studentDTO.Id).FirstOrDefault();
                 if (existingStudent == null)
                 {
+                    _logger.LogWarning("Student with ID {Id} not found for update.", studentDTO.Id);
                     return NotFound($"The Student with id {studentDTO.Id} not found");
                 }
                 existingStudent.Name = studentDTO.Name;
                 existingStudent.Email = studentDTO.Email;
                 existingStudent.Age = studentDTO.Age;
                 _studentManagementDBContext.SaveChanges();
+                _logger.LogInformation("Student with ID {Id} updated successfully.", studentDTO.Id);
                 return Ok(studentDTO);
             }
             catch (Exception ex)
