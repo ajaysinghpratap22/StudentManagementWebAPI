@@ -24,6 +24,7 @@ namespace StudentManagementWebAPI.Controllers
         {
             try
             {
+
                 var students = _studentManagementDBContext.Students
                     .Select(s => new StudentDTO
                     {
@@ -138,7 +139,7 @@ namespace StudentManagementWebAPI.Controllers
             }
         }
         [HttpPost("CreateStudent")]
-        public ActionResult<StudentDTO> CreateStudent(StudentDTO studentDTO)
+        public ActionResult<StudentDTO> CreateStudent([FromBody] StudentDTO studentDTO)
         {
             try
             {
@@ -163,8 +164,34 @@ namespace StudentManagementWebAPI.Controllers
                 _logger.LogError(ex, "Error while inserting student");
                 return StatusCode(500, "Internal server error");
             }
-            
+
         }
-        
+        [HttpPut("UpdateStudent")]
+        public ActionResult<StudentDTO> UpdateStudent([FromBody] StudentDTO studentDTO)
+        {
+            try
+            {
+                if (studentDTO == null || studentDTO.Id <= 0)
+                {
+                    return BadRequest("Valid student data is required");
+                }
+                var existingStudent = _studentManagementDBContext.Students.Where(x => x.Id == studentDTO.Id).FirstOrDefault();
+                if (existingStudent == null)
+                {
+                    return NotFound($"The Student with id {studentDTO.Id} not found");
+                }
+                existingStudent.Name = studentDTO.Name;
+                existingStudent.Email = studentDTO.Email;
+                existingStudent.Age = studentDTO.Age;
+                _studentManagementDBContext.SaveChanges();
+                return Ok(studentDTO);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while updating student");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
     }
 }
