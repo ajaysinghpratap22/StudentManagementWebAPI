@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StudentManagementWebAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDBSetup : Migration
+    public partial class createdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

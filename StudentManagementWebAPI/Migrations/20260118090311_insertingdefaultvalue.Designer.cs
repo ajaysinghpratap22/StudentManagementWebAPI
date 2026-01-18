@@ -12,8 +12,8 @@ using StudentManagementWebAPI.Models;
 namespace StudentManagementWebAPI.Migrations
 {
     [DbContext(typeof(StudentManagementDBContext))]
-    [Migration("20260110070521_InitialDBSetup")]
-    partial class InitialDBSetup
+    [Migration("20260118090311_insertingdefaultvalue")]
+    partial class insertingdefaultvalue
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,24 @@ namespace StudentManagementWebAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Students");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Age = 21,
+                            CreatedDate = new DateTime(2026, 1, 18, 14, 33, 11, 601, DateTimeKind.Local).AddTicks(1368),
+                            Email = "jodnd@gmail.com",
+                            Name = "John Doe"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Age = 22,
+                            CreatedDate = new DateTime(2026, 1, 18, 14, 33, 11, 601, DateTimeKind.Local).AddTicks(1380),
+                            Email = "Janes@gmail.com",
+                            Name = "Jane Smith"
+                        });
                 });
 #pragma warning restore 612, 618
         }

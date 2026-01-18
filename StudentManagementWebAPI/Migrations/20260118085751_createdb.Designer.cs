@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StudentManagementWebAPI.Models;
 
@@ -11,9 +12,11 @@ using StudentManagementWebAPI.Models;
 namespace StudentManagementWebAPI.Migrations
 {
     [DbContext(typeof(StudentManagementDBContext))]
-    partial class StudentManagementDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260118085751_createdb")]
+    partial class createdb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,24 +51,6 @@ namespace StudentManagementWebAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Students");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Age = 21,
-                            CreatedDate = new DateTime(2026, 1, 18, 14, 33, 11, 601, DateTimeKind.Local).AddTicks(1368),
-                            Email = "jodnd@gmail.com",
-                            Name = "John Doe"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Age = 22,
-                            CreatedDate = new DateTime(2026, 1, 18, 14, 33, 11, 601, DateTimeKind.Local).AddTicks(1380),
-                            Email = "Janes@gmail.com",
-                            Name = "Jane Smith"
-                        });
                 });
 #pragma warning restore 612, 618
         }

@@ -31,7 +31,10 @@ namespace StudentManagementWebAPI.Controllers
                         Id = s.Id,
                         Name = s.Name,
                         Email = s.Email,
-                        Age = s.Age
+                        Age = s.Age,
+                        CreatedDate= s.CreatedDate
+
+
                     })
                     .ToList();
                 return Ok(students);
@@ -67,7 +70,9 @@ namespace StudentManagementWebAPI.Controllers
                     Id = student.Id,
                     Name = student.Name,
                     Email = student.Email,
-                    Age = student.Age
+                    Age = student.Age,
+                    CreatedDate = student.CreatedDate
+
                 };
                 _logger.LogInformation("Student with ID {Id} fetched successfully.", id);
                 return Ok(studentDto);
@@ -102,7 +107,8 @@ namespace StudentManagementWebAPI.Controllers
                     Id = student.Id,
                     Name = student.Name,
                     Email = student.Email,
-                    Age = student.Age
+                    Age = student.Age,
+                    CreatedDate = student.CreatedDate
                 };
                 _studentManagementDBContext.Students.Remove(student);
                 _studentManagementDBContext.SaveChanges();
@@ -139,7 +145,8 @@ namespace StudentManagementWebAPI.Controllers
                     Id = student.Id,
                     Name = student.Name,
                     Email = student.Email,
-                    Age = student.Age
+                    Age = student.Age,
+                    CreatedDate = student.CreatedDate23
                 };
                 _logger.LogInformation("Student with Name {Name} fetched successfully.", name);
                 return Ok(studentDto);

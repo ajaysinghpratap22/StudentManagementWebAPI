@@ -14,5 +14,8 @@ namespace StudentManagementWebAPI.Models
         [Required]
         [Range(6, 120, ErrorMessage = "Age must be greater than 5.")]
         public int Age { get; set; }
+        [Required]
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+
     }
 }
